@@ -7,7 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { UserInputContext } from "../../_context/userInputContext";
+import { UserInputContext } from "@/app/_context/UserinputContext";
+
 
 function SelectOption() {
   const {userCourseInput,setUserCourseInput}=useContext(UserInputContext);

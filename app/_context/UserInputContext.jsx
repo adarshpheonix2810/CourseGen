@@ -1,6 +1,3 @@
 import { createContext } from "react";
 
-export const UserInputContext = createContext({
-    userCourseInput: {},
-    setUserCourseInput: () => {}
-});
+export const UserInputContext=createContext();
