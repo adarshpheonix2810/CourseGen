@@ -1,4 +1,4 @@
-import { UserInputContext } from "@/app/_context/UserinputContext";
+import { UserInputContext } from "../_context/UserinputContext";
 import CategoryList from "@/app/_shared/CategoryList";
 import Image from "next/image";
 import React, { useContext } from "react";

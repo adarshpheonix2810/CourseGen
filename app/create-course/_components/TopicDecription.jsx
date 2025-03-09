@@ -1,4 +1,4 @@
-import { UserInputContext } from "@/app/_context/UserinputContext";
+import { UserInputContext } from "../_context/UserinputContext";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useContext } from "react";
