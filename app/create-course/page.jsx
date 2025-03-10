@@ -9,7 +9,7 @@ import {
 import SelectCategory from "./_components/SelectCategory";
 import TopicDecription from "./_components/TopicDecription";
 import SelectOption from "./_components/SelectOption";
-import { UserInputContext } from "../_context/UserinputContext";
+import { UserInputContext } from "../_context/UserInputContext";
 import { GenerateCourseLayout_AI } from "@/configs/AiModel";
 import LoadingDialog from "./_components/LoadingDialog";
 import { db } from "@/configs/db";
