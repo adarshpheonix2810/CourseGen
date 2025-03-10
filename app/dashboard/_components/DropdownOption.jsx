@@ -33,7 +33,7 @@ function DropdownOption({children,handleOnDelete}) {
     <div>
       <DropdownMenu>
           <DropdownMenuTrigger>{children}</DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent inert={openAlert}>
               <DropdownMenuItem onClick={()=>setOpenAlert(true)}>
                 <div className='flex gap-3 items-center'>
                       <FaTrash /> Delete

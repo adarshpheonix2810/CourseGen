@@ -20,7 +20,7 @@ function EditCourseBasicInfo({ course, refreshData }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  // ✅ Fetch data from correct structure
+  // Fetch data from correct structure
   useEffect(() => {
     if (course?.courseOutput) {
       setName(course.courseOutput.courseName || "");
@@ -31,7 +31,7 @@ function EditCourseBasicInfo({ course, refreshData }) {
   const onUpdateHandler = async () => {
     if (!course) return;
 
-    // ✅ Update correct fields inside `courseOutput`
+    // Update correct fields inside `courseOutput`
     const updatedCourse = {
       ...course,
       courseOutput: {
@@ -50,33 +50,35 @@ function EditCourseBasicInfo({ course, refreshData }) {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger>
-        <HiPencilSquare className="ml-2 cursor-pointer text-xl" />
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Course Title & Description</DialogTitle>
-        </DialogHeader>
-        <div className="mt-3">
-          <label>Course Title</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div className="mt-3">
-          <label>Description</label>
-          <Textarea
-            className="h-40"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <DialogFooter>
-         <DialogClose asChild>
-                     <Button onClick={onUpdateHandler}>Update</Button>
-                   </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <div className="p-5 md:p-10 border rounded-xl shadow-sm">
+      <Dialog>
+        <DialogTrigger>
+          <HiPencilSquare className="ml-2 cursor-pointer text-xl" />
+        </DialogTrigger>
+        <DialogContent className="p-4 md:p-6 lg:p-8 xl:p-10">
+          <DialogHeader>
+            <DialogTitle>Edit Course Title & Description</DialogTitle>
+          </DialogHeader>
+          <div className="mt-3">
+            <label className="block text-sm font-medium mb-2">Course Title</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} className="w-full" />
+          </div>
+          <div className="mt-3">
+            <label className="block text-sm font-medium mb-2">Description</label>
+            <Textarea
+              className="h-40 w-full"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button onClick={onUpdateHandler}>Update</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
 

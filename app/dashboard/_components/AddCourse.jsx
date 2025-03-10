@@ -9,18 +9,18 @@ function AddCourse() {
   const { user } = useUser();
   const { userCourseList, setUserCourseList } = useContext(UserCourseListContext);
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <h2 className="text-3xl">
-          hello,
-          <span className="font-bold">{user?.fullName}</span>
+    <div className="flex flex-col items-center justify-center p-4 max-w-full overflow-hidden">
+      <div className="mb-4 text-center w-full">
+        <h2 className="text-2xl md:text-3xl text-blue-600 font-bold">
+          Hello,
+          <span className="font-bold text-red-600">{user?.fullName}</span>
         </h2>
-        <p className="text-sm text-blue-300">
+        <p className="text-xs md:text-sm text-gray-700 italic">
           Create new course with Ai, Share with your friends
         </p>
       </div>
       <Link href={userCourseList>=5?'/dashboard/upgrade':'/create-course'}>
-        <Button>+ Create AI Course</Button>
+        <Button className="w-full md:w-auto py-3 text-lg">+ Create AI Course</Button>
       </Link>
     </div>
   );

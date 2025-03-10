@@ -15,7 +15,7 @@ function FinishScreen({ params }) {
     const [copied, setCopied] = useState(false);
     const router = useRouter();
 
-    // ✅ Unwrap `params` before using it
+    // Unwrap `params` before using it
     const { courseId } = use(params);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ function FinishScreen({ params }) {
     };
 
     return (
-        <div className='px-10 md:px-20 lg:px-44 my-7'>
+        <div className='px-5 md:px-20 lg:px-44 my-7'>
             <h2 className='text-center font-bold text-2xl my-3 text-primary'>Congrats! Your Course is Ready</h2>
 
             {course && <CourseBasicInfo course={course} refreshData={() => console.log()} />}

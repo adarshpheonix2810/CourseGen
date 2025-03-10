@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -13,9 +13,11 @@ import { UserCourseListContext } from "@/app/_context/UserCourseListContext";
 import { useContext, } from "react";
 
 export default function SideBar() {
-  const { userCourseList, setUserCourseList }=useContext(UserCourseListContext);  const pathname = usePathname();
+  const { userCourseList, setUserCourseList }=useContext(UserCourseListContext);  
+  const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useClerk(); // Use the useClerk hook to get the signOut method
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const Menu = [
     {
@@ -53,18 +55,22 @@ export default function SideBar() {
     }
   };
 
+  const handleMenuItemClick = (path) => {
+    router.push(path);
+  };
+
   return (
-    <div className="fixed h-full md:w-64 p-5 shadow-md bg-white">
+    <div className={`fixed h-full w-full md:w-64 p-5 shadow-md bg-white overflow-hidden ${isSidebarOpen ? 'block' : 'hidden'}`}>
       <Image src="/name-logo-black.svg" width={50} height={50} alt="Logo" />
       <hr className="my-5" />
 
       <ul>
         {Menu.map((item) => (
-          <li key={item.id}>
+          <li key={item.id} className="w-full">
             {item.name === "Logout" ? (
               <button
                 onClick={handleLogout}
-                className={`flex items-center gap-2 w-full text-gray-600 p-3 cursor-pointer hover:bg-gray-100 hover:text-black rounded-lg mb-3xs ${
+                className={`flex items-center gap-2 w-full text-gray-600 p-3 cursor-pointer hover:bg-gray-100 hover:text-black rounded-lg mb-3 ${
                   pathname === item.path ? "bg-gray-100 text-black" : ""
                 }`}
               >
@@ -72,7 +78,7 @@ export default function SideBar() {
                 <h2>{item.name}</h2>
               </button>
             ) : (
-              <Link href={item.path}>
+              <Link href={item.path} onClick={() => handleMenuItemClick(item.path)} className="w-full">
                 <div
                   className={`flex items-center gap-2 text-gray-600 p-3 cursor-pointer hover:bg-gray-100 hover:text-black rounded-lg ${
                     pathname === item.path ? "bg-gray-100 text-black" : ""
@@ -87,10 +93,10 @@ export default function SideBar() {
         ))}
       </ul>
       <div className='absolute bottom-10 w-[80%]'>
-              <Progress value={(userCourseList?.length/5)*100} />
-              <h2 className='text-sm my-2 font-semibold'>{userCourseList?.length} Out of 5  Course Created</h2>
-              <h2 className='text-xs text-gray-500'>Upgrade your plan for unlimited course generation</h2>
-        </div>
+        <Progress value={(userCourseList?.length/5)*100} />
+        <h2 className='text-sm my-2 font-semibold'>{userCourseList?.length} Out of 5  Course Created</h2>
+        <h2 className='text-xs text-gray-500'>Upgrade your plan for unlimited course generation</h2>
+      </div>
     </div>
   );
 }

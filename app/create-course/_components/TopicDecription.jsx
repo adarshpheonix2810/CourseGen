@@ -16,31 +16,23 @@ function TopicDescription() {
   };
 
   return (
-    <div className="mx-20 lg:mx-44">
-      <div className="mt-5">
-        <label htmlFor="topic">
-          Write the topic for which you want to generate a course
-        </label>
-        <Input
-          id="topic"
-          placeholder="Topic"
-          className="h-14 text-xl"
-          value={safeInput.topic || ""}
-          onChange={(e) => handleInputChange("topic", e.target.value)}
-        />
-      </div>
-      <div className="mt-5">
-        <label htmlFor="description">
-          Tell us more about your course, what you want to learn (Optional)
-        </label>
-        <Textarea
-          id="description"
-          placeholder="Description"
-          className="h-24 text-xl"
-          value={safeInput.description || ""}
-          onChange={(e) => handleInputChange("description", e.target.value)}
-        />
-      </div>
+    <div className="mx-5 md:mx-20 lg:mx-44">
+      <h2 className="my-5 text-lg md:text-2xl">Write the topic for which you want to generate a course</h2>
+      <Input
+        id="topic"
+        placeholder="Topic"
+        className="h-14 text-lg md:text-xl"
+        value={safeInput.topic || ""}
+        onChange={(e) => handleInputChange("topic", e.target.value)}
+      />
+      <h2 className="my-5 text-lg md:text-2xl">Tell us more about your course, what you want to learn (Optional)</h2>
+      <Textarea
+        id="description"
+        placeholder="Description"
+        className="h-24 text-lg md:text-xl"
+        value={safeInput.description || ""}
+        onChange={(e) => handleInputChange("description", e.target.value)}
+      />
     </div>
   );
 }

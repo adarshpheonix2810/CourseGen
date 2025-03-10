@@ -20,13 +20,13 @@ function SelectOption() {
     }))
   }
   return (
-    <div className="px-10 md:px-20 lg:px-44">
-      <div className="grid grid-cols-2 gap-10">
+    <div className="px-5 md:px-20 lg:px-44">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className="text-sm">🚀Difficulty Level</label>
           <Select onValueChange={(value) => handleInputChange("level", value)}
             defaultValue={userCourseInput?.level}>
-            <SelectTrigger className="">
+            <SelectTrigger>
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
@@ -36,28 +36,25 @@ function SelectOption() {
             </SelectContent>
           </Select>
         </div>
-
-
         <div>
           <label className="text-sm">📚Course Duration</label>
           <Select onValueChange={(value) => handleInputChange("duration", value)}
             defaultValue={userCourseInput?.duration}>
-            <SelectTrigger className="">
+            <SelectTrigger>
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1 Hours">1 Hours</SelectItem>
+              <SelectItem value="1 Hours">1 Hour</SelectItem>
               <SelectItem value="2 Hours">2 Hours</SelectItem>
               <SelectItem value="3 Hours">3 Hours</SelectItem>
             </SelectContent>
           </Select>
         </div>
-
         <div>
           <label className="text-sm">📽️Add Video</label>
           <Select onValueChange={(value) => handleInputChange("displayVideo", value)}
             defaultValue={userCourseInput?.displayVideo}>
-            <SelectTrigger className="">
+            <SelectTrigger>
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>

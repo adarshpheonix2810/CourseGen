@@ -42,10 +42,10 @@ function CourseBasicInfo({ course, refreshData, edit = true }) {
   };
 
   return (
-    <div className="p-10 border rounded-xl shadow-sm mt-10">
+    <div className="p-5 md:p-10 border rounded-xl shadow-sm mt-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <h2 className="font-bold text-2xl flex items-center">
+          <h2 className="font-bold text-xl md:text-2xl flex items-center">
             {course?.courseOutput?.courseName}
             {edit && <EditCourseBasicInfo course={course} refreshData={refreshData} />}
           </h2>

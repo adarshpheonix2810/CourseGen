@@ -51,11 +51,11 @@ function EditChapters({ course, index, refreshData }) {
   };
 
   return (
-    <Dialog>
+    <Dialog className="sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto">
       <DialogTrigger>
         <HiPencilSquare className="ml-2 cursor-pointer" />
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="p-4 md:p-6 lg:p-8 xl:p-10">
         <DialogHeader>
           <DialogTitle>Edit Chapter</DialogTitle>
           <DialogDescription>
@@ -65,18 +65,19 @@ function EditChapters({ course, index, refreshData }) {
 
         {/* Input Fields */}
         <div className="mt-3">
-          <label>Chapter Title</label>
+          <label className="block text-sm font-medium mb-2">Chapter Title</label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter chapter name"
+            className="w-full p-2 pl-10 text-sm border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <div className="mt-3">
-          <label>Description</label>
+          <label className="block text-sm font-medium mb-2">Description</label>
           <Textarea
-            className="h-40"
+            className="h-40 w-full p-2 pl-10 text-sm border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             value={about}
             onChange={(e) => setAbout(e.target.value)}
             placeholder="Enter chapter description"
@@ -84,9 +85,14 @@ function EditChapters({ course, index, refreshData }) {
         </div>
 
         {/* Dialog Footer with Button Fix */}
-        <DialogFooter>
+        <DialogFooter className="mt-4">
           <DialogClose asChild>
-            <Button onClick={onUpdateHandler}>Update</Button>
+            <Button
+              onClick={onUpdateHandler}
+              className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            >
+              Update
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

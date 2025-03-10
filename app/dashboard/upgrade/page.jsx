@@ -9,11 +9,11 @@ import Link from 'next/link';
 function Upgrade() {
     const router = useRouter();
     return (
-        <div className="flex items-center justify-center">
-            <div className="container  p-1">
-                <div className="flex justify-center space-x-8">
+        <div className="flex items-center justify-center p-4 max-w-full overflow-hidden">
+            <div className="container p-1 max-w-full">
+                <div className="flex flex-col sm:flex-row justify-center space-x-0 sm:space-x-8 space-y-4 sm:space-y-0">
                     {/* Monthly Plan */}
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-80 flex flex-col items-center justify-between">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-80 flex flex-col items-center justify-between">
                         <div className='flex flex-col items-center'>
                             <h2 className="text-xl font-semibold mb-4 ">Monthly</h2>
                             <div className="text-4xl font-bold mb-4" ><p >199</p>  <FaRupeeSign className="inline-block text-sm " /><span className="text-base font-normal">/month</span></div>
@@ -40,7 +40,7 @@ function Upgrade() {
                     </div>
 
                     {/* Yearly Plan */}
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-80 flex flex-col items-center">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-80 flex flex-col items-center">
                         <h2 className="text-xl font-semibold mb-4">Yearly</h2>
                         <div className="text-4xl font-bold mb-4"><p>399</p> <FaRupeeSign className="inline-block text-sm " /><span className="text-base font-normal">/month</span></div>
                         <ul className="mb-6">
