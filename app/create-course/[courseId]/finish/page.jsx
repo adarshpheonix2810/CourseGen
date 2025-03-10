@@ -54,7 +54,7 @@ function FinishScreen({ params }) {
 
             <h2 className='mt-3'>Course URL:</h2>
             <h2 className='text-center text-gray-400 border p-2 rounded flex gap-5 items-center'>
-                {process.env.NEXT_PUBLIC_HOST_NAME}/course/view/{courseId}
+                {process.env.NEXT_PUBLIC_HOST_NAME}{courseId}
                 <MdContentCopy
                     className={`h-5 w-5 cursor-pointer ${copied ? 'text-green-500' : 'text-primary'}`}
                     onClick={handleCopy}
