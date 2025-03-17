@@ -1,6 +1,6 @@
 # AI Course Generator
 
-This repository contains the source code for an AI-powered course generator application. Users can input their data, preview the course structure in real-time, and generate professional course outlines. The application features AI-generated summaries, data storage and management through Neon Postgres, and an integrated AI chatbot for assistance.
+hello Everone!! This repository contains the source code for an AI-powered course generator application. Users can input their data, preview the course structure in real-time, and generate professional course outlines. The application features AI-generated summaries, data storage and management through Neon Postgres, and an integrated AI chatbot for assistance.
 
 ## Live Site
 You can access the live application [here](#).
