@@ -1,9 +1,9 @@
 "use client"
 
 import { db } from '@/configs/db';
+import { and, eq } from 'drizzle-orm';
 import { CourseList, Chapters } from '@/configs/schema';
 import { useUser } from '@clerk/nextjs';
-import { and, eq } from 'drizzle-orm';
 import React, { useEffect, useState } from 'react';
 import CourseBasicInfo from './_components/CourseBasicInfo';
 import CourseDetail from './_components/CourseDetail';
@@ -48,51 +48,83 @@ function CourseLayout({ params: paramsPromise }) {
     console.log(result);
   };
 
-  const GenerateChapterContent =()=>{
+  const GenerateChapterContent = async () => {
     setLoading(true);
-    const chapters=course?.courseOutput?.chapters;
-    chapters.forEach(async(chapter,index)=>{
-      const PROMPT='Explain the concept in Detail on Topic:'+course?.name+',Chapter:'+chapter?.chapterName+', in JSON Format with list of array with field as title , description in detail , Code Example (Code field in <precode> format) if applicable ';
-      console.log(PROMPT);
-
-      // if(index<3){
+    const chapters = course?.courseOutput?.chapters || [];
+    
+    try {
+      // Process chapters sequentially to avoid overwhelming the API
+      for (let index = 0; index < chapters.length; index++) {
+        const chapter = chapters[index];
+        const PROMPT = `Explain the concept in detail on Topic: ${course?.courseName || 'the topic'}, 
+                       Chapter: ${chapter?.chapterName || 'this chapter'}, in JSON Format with a list of objects 
+                       containing fields: title, description (in detail), and code (in <precode> format if applicable). 
+                       Ensure valid JSON with proper escaping of special characters.`;
+        
+        console.log(`Generating content for chapter ${index + 1}/${chapters.length}:`, chapter?.chapterName);
+        
         try {
-
-          let videoId='';
-          const result=await GenerateChapterContent_AI.sendMessage(PROMPT);
-          console.log(result?.response?.text());
-          const content = JSON.parse(result?.response?.text());
-          console.log('Parsed Content:', content);
-
-          // service.getVideos(course?.name+':'+chapter?.name).then(resp=>{
-          //   console.log(resp);
-          //   videoId=resp[0]?.id?.videoId
-          // })
-
-          const videoResponse = await service.getVideos(course?.courseName + ':' + chapter?.chapterName);
-          console.log('Video Response:', videoResponse);
-
-          videoId = videoResponse[0]?.id?.videoId;
-          await db.insert(Chapters).values({
-            chapterId:index,
-            courseId:course?.courseId,
-            content:content,
-            videoId:videoId 
-          })
-          setLoading(false);
-        } 
-        catch (error) {
-          setLoading(false);
-          console.log(error);
+          // Generate chapter content using AI
+          const result = await GenerateChapterContent_AI.sendMessage(PROMPT);
           
+          if (!result || !result.response) {
+            throw new Error('No response received from the AI service');
+          }
+          
+          const responseText = result.response.text();
+          console.log('Raw AI response for chapter:', chapter?.chapterName, responseText);
+          
+          // Clean up the response text (remove markdown code blocks)
+          const cleanJson = responseText.replace(/```json|```/g, '').trim();
+          console.log('Cleaned JSON for chapter:', chapter?.chapterName, cleanJson);
+          
+          // Parse the JSON content
+          const content = JSON.parse(cleanJson);
+          console.log('Parsed content for chapter:', chapter?.chapterName, content);
+          
+          // Get related video (if needed)
+          let videoId = '';
+          try {
+            const videoResponse = await service.getVideos(`${course?.courseName}: ${chapter?.chapterName}`);
+            console.log('Video response for chapter:', chapter?.chapterName, videoResponse);
+            videoId = videoResponse[0]?.id?.videoId || '';
+          } catch (videoError) {
+            console.error('Error fetching video for chapter:', chapter?.chapterName, videoError);
+            // Continue without video if there's an error
+          }
+          
+          // Save chapter to database
+          await db.insert(Chapters).values({
+            chapterId: index,
+            courseId: course?.courseId,
+            content: content,
+            videoId: videoId
+          });
+          
+          console.log(`Successfully processed chapter: ${chapter?.chapterName}`);
+          
+        } catch (error) {
+          console.error(`Error processing chapter ${chapter?.chapterName}:`, error);
+          // Continue to next chapter even if one fails
+          continue;
         }
-        await db.update(CourseList).set({
-          publish:true
-        })
-        router.replace('/create-course/'+course?.courseId+'/finish');
-      // }
+      }
       
-    })
+      // Mark course as published after all chapters are processed
+      await db.update(CourseList)
+        .set({ publish: true })
+        .where(eq(CourseList.courseId, course?.courseId));
+      
+      // Redirect to finish page
+      router.replace(`/create-course/${course?.courseId}/finish`);
+      
+    } catch (error) {
+      console.error('Error in GenerateChapterContent:', error);
+      // Show error to user
+      alert(`Failed to generate course content: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <div className='mt-10 px-7 md:px-20 lg:px-44'>

@@ -13,6 +13,7 @@ import { UserInputContext } from "../_context/UserInputContext";
 import { GenerateCourseLayout_AI } from "@/configs/AiModel";
 import LoadingDialog from "./_components/LoadingDialog";
 import { db } from "@/configs/db";
+import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser } from "@clerk/nextjs";
 import { CourseList } from "../../configs/schema";
@@ -37,14 +38,112 @@ function CreateCourse() {
     },
   ]
   const {userCourseInput,setUserCourseInput}=useContext(UserInputContext);
-  const [loading,setLoading]=useState(false);
+  const [loading,setLoading]=useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [courseCount, setCourseCount] = useState(0);
   const {user}=useUser();
   const router=useRouter();
-  useEffect(() =>{
-    console.log(userCourseInput);
-
-  }, [userCourseInput]);
+  const MAX_FREE_COURSES = 5;
+  // Check course count on component mount and send notifications
+  useEffect(() => {
+    const checkCourseCount = async () => {
+      try {
+        if (user?.id) {
+          const userEmail = user.primaryEmailAddress?.emailAddress;
+          const userCourses = await db.select()
+            .from(CourseList)
+            .where(eq(CourseList.createdBy, userEmail));
+          
+          const currentCount = userCourses.length;
+          setCourseCount(currentCount);
+          
+          // Send notification email when user is approaching the limit (at 80% of max)
+          const warningThreshold = Math.floor(MAX_FREE_COURSES * 0.8);
+          if (currentCount >= warningThreshold && currentCount < MAX_FREE_COURSES) {
+            try {
+              await fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: userEmail,
+                  courseCount: currentCount,
+                  maxFreeCourses: MAX_FREE_COURSES,
+                  type: 'approaching_limit'
+                })
+              });
+            } catch (error) {
+              console.error('Error sending notification email:', error);
+            }
+          }
+          
+          // Redirect to upgrade page if user has reached the limit
+          if (currentCount >= MAX_FREE_COURSES) {
+            try {
+              await fetch('/api/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: userEmail,
+                  courseCount: currentCount,
+                  maxFreeCourses: MAX_FREE_COURSES,
+                  type: 'limit_reached'
+                })
+              });
+            } catch (error) {
+              console.error('Error sending limit reached email:', error);
+            }
+            router.push('/upgrade');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking course count:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkCourseCount();
+  }, [user]);
+  
+  // Show loading state while checking course count
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
+  
+  // Redirect to upgrade page if user tries to access with max courses
+  if (courseCount >= MAX_FREE_COURSES) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+          <div className="text-6xl mb-4">🎓</div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Course Limit Reached</h1>
+          <p className="text-gray-600 mb-6">
+            You've created {courseCount} out of {MAX_FREE_COURSES} free courses.
+            Upgrade your plan to create unlimited courses!
+          </p>
+          <div className="space-y-3">
+            <Button 
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              onClick={() => router.push('/upgrade')}
+            >
+              Upgrade Now
+            </Button>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => router.push('/dashboard')}
+            >
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
 /**used to check button statusenable or disable*/
   const checkStatus=() =>{
@@ -69,19 +168,45 @@ function CreateCourse() {
 
     };
   
-    const GenerateCourseLayout =async()=>{
+    const GenerateCourseLayout = async () => {
       setLoading(true);
-      const BASIC_PROMPT='Generate a Course Tutorial on Following Detail with field Course Name , Description , Along with Chapter Name , About , Duration:';
-      const USER_INPUT_PROMPT='Category:'+userCourseInput?.category+',Topic:'+userCourseInput?.topic+',level:'+userCourseInput?.level+',Duration:'+userCourseInput?.duration+' , noOfChapters:'+userCourseInput?.noOfChapters+', in JSON format ' ;
-      const FINAL_PROMPT=BASIC_PROMPT+USER_INPUT_PROMPT;
-      // console.log(FINAL_PROMPT);
-
-      const result = await GenerateCourseLayout_AI.sendMessage(FINAL_PROMPT);
-      console.log(result.response?.text());
-      console.log(JSON.parse(result.response?.text()));
-      setLoading(false);
-      SaveCourseLayoutInDb(JSON.parse(result.response?.text()));
-  }
+      try {
+        const BASIC_PROMPT = 'Generate a Course Tutorial on Following Detail with field Course Name, Description, Along with Chapter Name, About, Duration:';
+        const USER_INPUT_PROMPT = 'Category:' + userCourseInput?.category + 
+                                ', Topic:' + userCourseInput?.topic + 
+                                ', Level:' + userCourseInput?.level + 
+                                ', Duration:' + userCourseInput?.duration + 
+                                ', NoOfChapters:' + userCourseInput?.noOfChapters + 
+                                ', in JSON format with proper escaping for special characters.';
+        const FINAL_PROMPT = BASIC_PROMPT + USER_INPUT_PROMPT;
+        
+        console.log('Sending prompt to AI:', FINAL_PROMPT);
+        
+        const result = await GenerateCourseLayout_AI.sendMessage(FINAL_PROMPT);
+        
+        if (!result || !result.response) {
+          throw new Error('No response received from the AI service');
+        }
+        
+        const responseText = result.response.text();
+        console.log('Raw AI response:', responseText);
+        
+        // Clean up the response text if needed (remove markdown code blocks)
+        const cleanJson = responseText.replace(/```json|```/g, '').trim();
+        console.log('Cleaned JSON:', cleanJson);
+        
+        const courseData = JSON.parse(cleanJson);
+        console.log('Parsed course data:', courseData);
+        
+        await SaveCourseLayoutInDb(courseData);
+      } catch (error) {
+        console.error('Error generating course layout:', error);
+        // Show error to user
+        alert(`Failed to generate course: ${error.message}`);
+      } finally {
+        setLoading(false);
+      }
+    }
 
   const SaveCourseLayoutInDb = async (courseLayout) => {
     let id = uuidv4();

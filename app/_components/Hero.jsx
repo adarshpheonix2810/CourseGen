@@ -1,14 +1,25 @@
-import { AnimatedGradientText } from '@/components/ui/animated-gradient-text'
+'use client';
+
+import { AnimatedGradientText } from '@/components/ui/animated-gradient-text';
 import Link from 'next/link';
-import React from 'react'
+import React, { useEffect } from 'react';
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sparkles } from '../../components/ui/sparkles';
-import Button from '@/components/ui/Buttons';
+import { useUser, useClerk, SignInButton } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 
 
 function Hero() {
+    const { isSignedIn } = useUser();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (isSignedIn) {
+            router.push('/dashboard');
+        }
+    }, [isSignedIn, router]);
     return (
         <>
             <div className='w-full min-h-screen overflow-hidden bg-black bg-cover bg-no-repeat bg-center bg-fixed'>
@@ -68,12 +79,27 @@ function Hero() {
                         />
                     </div>
                 </div>
-                <div className="flex justify-center mt-10" style={{ marginTop: '-10.5rem' }}> {/* Adjusted spacing */}
-                    <Link href={'/dashboard'}>
-                        <Button className="hidden mr-8 lg:block">
-                            Get Started
-                        </Button>
-                    </Link>
+                <div className="flex justify-center mt-10" style={{ marginTop: '-10.5rem' }}>
+                    <div className="hidden mr-8 lg:block">
+                        <SignInButton mode="modal">
+                            <button 
+                                className="inline-flex h-12 items-center justify-center rounded-full px-8 py-1 text-sm font-medium text-white relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-50"
+                                style={{
+                                    background: 'linear-gradient(45deg, #a2aeff, #3749be, #a2aeff)',
+                                    backgroundSize: '200% 200%',
+                                    animation: 'gradient 3s ease infinite',
+                                    border: 'none',
+                                    cursor: 'pointer'
+                                }}
+                                onClick={() => {
+                                    sessionStorage.setItem('__clerk_post_sign_in_redirect_url', '/dashboard');
+                                    sessionStorage.setItem('__clerk_post_sign_up_redirect_url', '/dashboard');
+                                }}
+                            >
+                                <span className="z-10">Get Started</span>
+                            </button>
+                        </SignInButton>
+                    </div>
                 </div>
                 <h1 className='text-2xl text-gray-400 mt-10 text-center'>
                     Empowering learners with customized AI-driven educational experiences.

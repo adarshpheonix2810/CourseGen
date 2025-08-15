@@ -1,9 +1,11 @@
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 /** @type { import("drizzle-kit").Config } */
 export default {
-    schema: "./configs/Schema.jsx",
+    schema: "./configs/schema.jsx",
     dialect: 'postgresql',
     dbCredentials: {
-      url:"postgresql://neondb_owner:npg_MNlxuciR51ZS@ep-round-star-a8saecy2.eastus2.azure.neon.tech/AI-Course-Generator?sslmode=require",
-      
+      url: process.env.NEXT_PUBLIC_DB_CONNECTION_STRING
     }
   };

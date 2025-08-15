@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useAnimation, useInView } from "motion/react";
+import { motion, useAnimation, useInView } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 function BoxReveal({ children, width = "fit-content", boxColor = "#5046e6", duration }) {
