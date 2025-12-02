@@ -26,6 +26,7 @@ You can access the live application [here](#).
 ### Frontend:
 - React.js
 - Next.js
+- Html
 - Tailwind CSS
 - Shadcn UI components
 
